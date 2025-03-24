@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Cursos Avanzada</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        /* Barra de navegación superior */
+        .top-navbar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .user-menu {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-icon {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .user-icon i {
+            font-size: 20px;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .dropdown-menu a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .user-menu:hover .dropdown-menu {
+            display: block;
+        }
+
+        .logout-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* Layout */
+        .dashboard {
+            display: flex;
+        }
+
+        /* Menú lateral */
+        .sidebar {
+            width: 250px;
+            background-color: #34495e;
+            color: white;
+            height: calc(100vh - 60px);
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            color: #ecf0f1;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 20px 0;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 10px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #3d566e;
+        }
+
+        /* Contenido principal */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-top: 60px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #2c3e50;
+        }
+
+        .header button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .header button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Barra de búsqueda */
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            font-size: 16px;
+        }
+
+        .search-bar button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .search-bar button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Tarjetas de cursos */
+        .course-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .course-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .course-card h3 {
+            margin: 0;
+            font-size: 22px;
+            color: #2c3e50;
+        }
+
+        .course-card p {
+            margin: 10px 0;
+            color: #666;
+        }
+
+        .course-card .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .course-card .actions button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .course-card .actions button.delete {
+            background-color: #dc3545;
+        }
+
+        .course-card .actions button:hover {
+            opacity: 0.9;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .modal-content input,
+        .modal-content textarea,
+        .modal-content select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .modal-content button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .modal-content button:hover {
+            background-color: #0056b3;
+        }
+
+        .modal-content .close {
+            background-color: #dc3545;
+            margin-left: 10px;
+        }
+
+        /* Sección de estudiantes */
+        .student-list {
+            margin-top: 20px;
+        }
+
+        .student-list h2 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .student-list table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-list th,
+        .student-list td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .student-list th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .student-list td {
+            color: #666;
+        }
+
+        .student-list .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .student-list .actions button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .student-list .actions button.delete {
+            background-color: #dc3545;
+        }
+
+        .student-list .actions button:hover {
+            opacity: 0.9;
+        }
+
+        /* Estadísticas */
+        .stats {
+            margin-top: 40px;
+        }
+
+        .stats h2 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .stats .chart {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Control de pagos */
+        .payment-control {
+            margin-top: 20px;
+        }
+
+        .payment-control h2 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .payment-control table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-control th,
+        .payment-control td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .payment-control th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .payment-control td {
+            color: #666;
+        }
+
+        .payment-control .status.paid {
+            color: #28a745;
+        }
+
+        .payment-control .status.pending {
+            color: #dc3545;
+        }
+
+        /* Ocultar secciones por defecto */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Ocultar elementos específicos */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación superior -->
+    <div class="top-navbar">
+        <div class="logo">Gestión de Cursos</div>
+        <div class="user-menu">
+            <div class="user-icon">
+                <i class="fas fa-user-circle"></i>
+                <span>Administrador</span>
+            </div>
+            <div class="dropdown-menu">
+                <a href="#"><i class="fas fa-cog"></i> Configuración</a>
+                <a href="#"><i class="fas fa-user"></i> Perfil</a>
+                <a href="#"><i class="fas fa-bell"></i> Notificaciones</a>
+                <a href="#"><i class="fas fa-question-circle"></i> Ayuda</a>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </button>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- Menú lateral -->
+        <div class="sidebar">
+            <h2>Menú</h2>
+            <ul>
+                <li><a href="#cursos" onclick="showSection('cursos')"><i class="fas fa-book"></i> Cursos</a></li>
+                <li><a href="#estudiantes" onclick="showSection('estudiantes')"><i class="fas fa-users"></i> Estudiantes</a></li>
+                <li><a href="#pagos" onclick="showSection('pagos')"><i class="fas fa-money-bill-wave"></i> Control de Pagos</a></li>
+                <li><a href="#estadisticas" onclick="showSection('estadisticas')"><i class="fas fa-chart-pie"></i> Estadísticas</a></li>
+            </ul>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="main-content">
+            <!-- Encabezado dinámico -->
+            <div class="header">
+                <h1 id="section-title">Cursos Disponibles</h1>
+                <button id="main-action-button" onclick="openModal()">Agregar Curso</button>
+            </div>
+
+            <!-- Barra de búsqueda (solo visible en pagos) -->
+            <div id="search-container" class="search-bar hidden">
+                <input type="text" placeholder="Buscar pagos por estudiante o curso...">
+                <button><i class="fas fa-search"></i> Buscar</button>
+            </div>
+
+            <!-- Sección de Cursos -->
+            <div id="cursos" class="section active">
+                <div class="course-cards">
+                    <!-- Ejemplo de tarjetas de cursos -->
+                    <div class="course-card">
+                        <h3>Curso de HTML</h3>
+                        <p>Aprende los fundamentos de HTML.</p>
+                        <p><strong>Duración:</strong> 4 semanas</p>
+                        <p><strong>Instructor:</strong> Juan Pérez</p>
+                        <div class="actions">
+                            <button>Editar</button>
+                            <button class="delete">Eliminar</button>
+                        </div>
+                    </div>
+                    <div class="course-card">
+                        <h3>Curso de CSS</h3>
+                        <p>Domina el diseño web con CSS.</p>
+                        <p><strong>Duración:</strong> 5 semanas</p>
+                        <p><strong>Instructor:</strong> María Gómez</p>
+                        <div class="actions">
+                            <button>Editar</button>
+                            <button class="delete">Eliminar</button>
+                        </div>
+                    </div>
+                    <div class="course-card">
+                        <h3>Curso de JavaScript</h3>
+                        <p>Aprende programación con JavaScript.</p>
+                        <p><strong>Duración:</strong> 6 semanas</p>
+                        <p><strong>Instructor:</strong> Carlos Ruiz</p>
+                        <div class="actions">
+                            <button>Editar</button>
+                            <button class="delete">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Estudiantes -->
+            <div id="estudiantes" class="section">
+                <div class="student-list">
+                    <h2>Estudiantes Inscritos</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Curso Inscrito</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Ana López</td>
+                                <td>ana@example.com</td>
+                                <td>Curso de HTML</td>
+                                <td class="actions">
+                                    <button>Editar</button>
+                                    <button class="delete">Eliminar</button>
+                                    <button onclick="sendCertificate('Ana López')">Enviar Certificado</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Pedro Martínez</td>
+                                <td>pedro@example.com</td>
+                                <td>Curso de CSS</td>
+                                <td class="actions">
+                                    <button>Editar</button>
+                                    <button class="delete">Eliminar</button>
+                                    <button onclick="sendCertificate('Pedro Martínez')">Enviar Certificado</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Luisa Fernández</td>
+                                <td>luisa@example.com</td>
+                                <td>Curso de JavaScript</td>
+                                <td class="actions">
+                                    <button>Editar</button>
+                                    <button class="delete">Eliminar</button>
+                                    <button onclick="sendCertificate('Luisa Fernández')">Enviar Certificado</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sección de Control de Pagos -->
+            <div id="pagos" class="section">
+                <div class="payment-control">
+                    <h2>Control de Pagos</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>Curso</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Ana López</td>
+                                <td>Curso de HTML</td>
+                                <td>$100</td>
+                                <td class="status pending">Pendiente</td>
+                                <td class="actions">
+                                    <button onclick="markAsPaid('Ana López')">Marcar como Pagado</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Pedro Martínez</td>
+                                <td>Curso de CSS</td>
+                                <td>$120</td>
+                                <td class="status paid">Pagado</td>
+                                <td class="actions">
+                                    <button disabled>Marcar como Pagado</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Luisa Fernández</td>
+                                <td>Curso de JavaScript</td>
+                                <td>$150</td>
+                                <td class="status pending">Pendiente</td>
+                                <td class="actions">
+                                    <button onclick="markAsPaid('Luisa Fernández')">Marcar como Pagado</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sección de Estadísticas -->
+            <div id="estadisticas" class="section">
+                <div class="stats">
+                    <h2>Estadísticas de Cursos</h2>
+                    <div class="chart">
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar curso -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Agregar Nuevo Curso</h2>
+            <form id="course-form" class="modal-form">
+                <!-- Formulario para cursos -->
+                <div id="course-fields">
+                    <label for="course-name">Nombre del Curso:</label>
+                    <input type="text" id="course-name" name="course-name" required>
+
+                    <label for="course-description">Descripción:</label>
+                    <textarea id="course-description" name="course-description" rows="4" required></textarea>
+
+                    <label for="course-duration">Duración:</label>
+                    <input type="text" id="course-duration" name="course-duration" required>
+
+                    <label for="course-instructor">Instructor:</label>
+                    <input type="text" id="course-instructor" name="course-instructor" required>
+                </div>
+
+                <!-- Formulario para estudiantes -->
+                <div id="student-fields" class="hidden">
+                    <label for="student-name">Nombre del Estudiante:</label>
+                    <input type="text" id="student-name" name="student-name">
+
+                    <label for="student-email">Email:</label>
+                    <input type="email" id="student-email" name="student-email">
+
+                    <label for="student-course">Curso:</label>
+                    <select id="student-course" name="student-course">
+                        <option value="html">Curso de HTML</option>
+                        <option value="css">Curso de CSS</option>
+                        <option value="js">Curso de JavaScript</option>
+                    </select>
+
+                    <label for="student-phone">Teléfono:</label>
+                    <input type="tel" id="student-phone" name="student-phone">
+                </div>
+
+                <button type="submit" id="submit-button">Agregar</button>
+                <button type="button" class="close" onclick="closeModal()">Cerrar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Variable para controlar la sección actual
+        let currentSection = 'cursos';
+
+        // Funciones para abrir y cerrar el modal
+        function openModal() {
+            // Configurar el modal según la sección actual
+            const modalTitle = document.getElementById('modal-title');
+            const submitButton = document.getElementById('submit-button');
+            const courseFields = document.getElementById('course-fields');
+            const studentFields = document.getElementById('student-fields');
+
+            if (currentSection === 'cursos') {
+                modalTitle.textContent = 'Agregar Nuevo Curso';
+                submitButton.textContent = 'Agregar Curso';
+                courseFields.classList.remove('hidden');
+                studentFields.classList.add('hidden');
+            } else if (currentSection === 'estudiantes') {
+                modalTitle.textContent = 'Agregar Nuevo Estudiante';
+                submitButton.textContent = 'Agregar Estudiante';
+                courseFields.classList.add('hidden');
+                studentFields.classList.remove('hidden');
+            }
+
+            document.getElementById('modal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('open');
+        }
+
+        // Cerrar modal al hacer clic fuera del contenido
+        window.onclick = function (event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+        // Manejar el envío del formulario
+        document.getElementById('course-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            
+            if (currentSection === 'cursos') {
+                alert('Curso agregado exitosamente.');
+            } else if (currentSection === 'estudiantes') {
+                alert('Estudiante agregado exitosamente.');
+            }
+            
+            closeModal();
+        });
+
+        // Enviar certificado
+        function sendCertificate(studentName) {
+            alert(`Certificado enviado a ${studentName}`);
+        }
+
+        // Marcar como pagado
+        function markAsPaid(studentName) {
+            alert(`Pago marcado como completado para ${studentName}`);
+        }
+
+        // Mostrar la sección seleccionada
+        function showSection(sectionId) {
+            // Actualizar la sección actual
+            currentSection = sectionId;
+            
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Mostrar la sección seleccionada
+            document.getElementById(sectionId).classList.add('active');
+
+            // Cambiar el título de la sección
+            const sectionTitle = document.getElementById('section-title');
+            const actionButton = document.getElementById('main-action-button');
+            const searchContainer = document.getElementById('search-container');
+
+            switch (sectionId) {
+                case 'cursos':
+                    sectionTitle.textContent = 'Cursos Disponibles';
+                    actionButton.textContent = 'Agregar Curso';
+                    actionButton.classList.remove('hidden');
+                    searchContainer.classList.add('hidden');
+                    break;
+                case 'estudiantes':
+                    sectionTitle.textContent = 'Estudiantes Inscritos';
+                    actionButton.textContent = 'Agregar Estudiante';
+                    actionButton.classList.remove('hidden');
+                    searchContainer.classList.add('hidden');
+                    break;
+                case 'pagos':
+                    sectionTitle.textContent = 'Control de Pagos';
+                    actionButton.classList.add('hidden');
+                    searchContainer.classList.remove('hidden');
+                    break;
+                case 'estadisticas':
+                    sectionTitle.textContent = 'Estadísticas de Cursos';
+                    actionButton.classList.add('hidden');
+                    searchContainer.classList.add('hidden');
+                    break;
+            }
+        }
+
+        // Función para cerrar sesión
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas salir?')) {
+                alert('Sesión cerrada correctamente.');
+                // Redireccionar a la página de login
+                // window.location.href = 'login.html';
+            }
+        }
+
+        // Inicializar la sección de cursos como activa
+        showSection('cursos');
+
+        // Inicializar gráfico de torta
+        window.onload = function() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['HTML', 'CSS', 'JavaScript', 'Python', 'React'],
+                    datasets: [{
+                        data: [25, 20, 30, 15, 10],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribución de Estudiantes por Curso',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

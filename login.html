@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Inicio de Sesión con Carrusel</title>
+    <!-- Agrega FontAwesome para el ícono de perfil -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #191970; /* Fondo azul */
+            overflow: hidden;
+        }
+
+        /* Contenedor dividido */
+        .split-container {
+            display: flex;
+            width: 90%;
+            max-width: 1200px;
+            height: 80%;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Lado izquierdo (carrusel de imágenes) */
+        .left-side {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel-slides {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-slides img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            z-index: 10;
+        }
+
+        .carousel-button.prev {
+            left: 10px;
+        }
+
+        .carousel-button.next {
+            right: 10px;
+        }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .carousel-dots .dot {
+            width: 10px;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .carousel-dots .dot.active {
+            background-color: #fff;
+        }
+
+        /* Lado derecho (formulario) */
+        .right-side {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+        }
+
+        .login-container {
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .profile-icon {
+            font-size: 50px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .input-group input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .login-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .login-button:active {
+            transform: scale(0.95);
+        }
+
+        .forgot-password {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .split-container {
+                flex-direction: column;
+                height: 90%;
+            }
+
+            .left-side {
+                flex: 0.5;
+            }
+
+            .right-side {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="split-container">
+        <!-- Lado izquierdo (carrusel de imágenes) -->
+        <div class="left-side">
+            <div class="carousel-slides">
+                <img src="1.jpg" alt="Imagen 1">
+                <img src="2.jpg" alt="Imagen 2">
+                <img src="4.jpg" alt="Imagen 3">
+                <img src="3.jpg" alt="Imagen 4">
+            </div>
+
+            <!-- Botones de navegación -->
+            <button class="carousel-button prev">&#10094;</button>
+            <button class="carousel-button next">&#10095;</button>
+
+            <!-- Puntos de navegación -->
+            <div class="carousel-dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+
+        <!-- Lado derecho (formulario) -->
+        <div class="right-side">
+            <div class="login-container">
+                <!-- Icono de perfil -->
+                <div class="profile-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h2>Iniciar Sesión</h2>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="username">Nombre de Usuario</label>
+                        <input type="text" id="username" name="username" placeholder="Ingresa tu nombre de usuario" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+                    </div>
+                    <button type="button" class="login-button" onclick="window.location.href='sistema/index.html'">
+                        Iniciar Sesión
+                    </button>
+                </form>
+                <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        const carouselSlides = document.querySelector('.carousel-slides');
+        const prevButton = document.querySelector('.carousel-button.prev');
+        const nextButton = document.querySelector('.carousel-button.next');
+        const dots = document.querySelectorAll('.carousel-dots .dot');
+        let currentIndex = 0;
+        let autoSlideInterval;
+
+        // Función para mover el carrusel a una imagen específica
+        function goToSlide(index) {
+            if (index < 0) index = carouselSlides.children.length - 1;
+            if (index >= carouselSlides.children.length) index = 0;
+
+            currentIndex = index;
+            const offset = -currentIndex * 100;
+            carouselSlides.style.transform = `translateX(${offset}%)`;
+
+            // Actualizar el estado de los puntos
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentIndex);
+            });
+        }
+
+        // Función para avanzar al siguiente slide
+        function nextSlide() {
+            goToSlide(currentIndex + 1);
+        }
+
+        // Función para retroceder al slide anterior
+        function prevSlide() {
+            goToSlide(currentIndex - 1);
+        }
+
+        // Iniciar el carrusel automático
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(nextSlide, 5000); // Cambia cada 5 segundos
+        }
+
+        // Detener el carrusel automático
+        function stopAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+
+        // Event listeners para los botones
+        prevButton.addEventListener('click', () => {
+            stopAutoSlide();
+            prevSlide();
+            startAutoSlide();
+        });
+
+        nextButton.addEventListener('click', () => {
+            stopAutoSlide();
+            nextSlide();
+            startAutoSlide();
+        });
+
+        // Event listeners para los puntos
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                stopAutoSlide();
+                goToSlide(index);
+                startAutoSlide();
+            });
+        });
+
+        // Iniciar el carrusel automático al cargar la página
+        startAutoSlide();
+    </script>
+</body>
+</html>
